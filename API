@@ -1,0 +1,212 @@
+TodoAPI
+TodoAPI
+TodoAPI is RESTful. You can read more about using REST API from https://spring.io/understanding/REST and https://www.restapitutorial.com/
+
+Start from creating a new user. When the user is created, bearer token (access_token) is returned. Keep it safe - it is used to authenticate you.
+
+If you need access token again, you can "log in" by sending your username and password to /users/get-token path.
+
+To use other API methods, you'll need to pass bearer token through HTTP header.
+
+Authorization: Bearer your_token_here
+All tasks are linked to users, you won't be able to change tasks created by others.
+
+When updating models, you can send only those properties you want to change.
+
+API endpoint is http://demo2.z-bit.ee/
+
+Models
+User
+id	int (read-only)
+username	string (required) max 64 chars
+firstname	string (optional)
+lastname	string (optional)
+newPassword	string - for changing password
+access_token	string (read-only) - Bearer token for authentication
+created_at	date (read-only)
+Task
+id	int (read-only)
+title	string (required) max 255 chars
+desc	string (optional)
+marked_as_done	boolean (optional)
+created_at	date (read-only)
+List of API calls
+User
+GET /users/{id}	Get user
+PUT /users/{id}	Update user profile
+POST /users	For creating a new user, doesn't need an authentication token
+POST /users/get-token	To get access_token again, send your username and password
+Task
+GET /tasks	Get list of tasks
+GET /tasks/{id}	Get details of specific task
+PUT /tasks/{id}	Update task
+POST /tasks	Create a new task
+DELETE /tasks/{id}	Delete task
+API call examples
+Create an account
+Doesn't need an authentication token
+POST /users
+
+Body:
+{
+    "username": "timo.triisa@tptlive.ee",
+    "firstname": "Timo",
+    "lastname": "Triisa",
+    "newPassword": "qwe123"
+}
+Response:
+{
+    "id": 7,
+    "username": "timo.triisa@tptlive.ee",
+    "firstname": "Timo",
+    "lastname": "Triisa",
+    "created_at": "2018-12-06 14:24:25",
+    "access_token": "Eo6KKi5AghYvFczGSRnI9T1_ZQEUDMA0"
+}
+Get authentication token
+Doesn't need an authentication token
+POST /users/get-token
+
+Body:
+{
+    "username": "timo.triisa@tptlive.ee",
+    "password": "qwe123"
+}
+{
+    "id": 2,
+    "username": "timo.triisa@tptlive.ee",
+    "firstname": "Timo",
+    "lastname": "Triisa",
+    "access_token": "Eo6KKi5AghYvFczGSRnI9T1_ZQEUDMA0"
+}
+View profile
+GET /users/{id}
+
+Body:
+empty
+Response:
+{
+        "id": 2,
+        "username": "timo.triisa@tptlive.ee",
+        "firstname": "Timo",
+        "lastname": "Triisa"
+}
+Update profile
+PUT /users/{id}
+
+Body:
+{
+    "newPassword": "qwe123asd"
+}
+Response:
+{
+    "id": 2,
+    "username": "timo.triisa@tptlive.ee",
+    "firstname": "Timo",
+    "lastname": "Triisa"
+}
+List of tasks
+GET /tasks
+
+Body:
+empty
+Response:
+[
+    {
+        "id": 1,
+        "title": "Task 1",
+        "desc": "",
+        "marked_as_done": false,
+        "created_at": "2018-12-06 15:59:51"
+    },
+    {
+        "id": 2,
+        "title": "Task 2",
+        "desc": "",
+        "marked_as_done": true,
+        "created_at": "2018-12-06 16:06:03"
+    },
+    {
+        "id": 3,
+        "title": "Task 3",
+        "desc": "test",
+        "marked_as_done": false,
+        "created_at": "2018-12-06 16:09:02"
+    }
+]
+Add task
+POST /tasks
+
+Body:
+{
+    "title": "Task 1",
+    "desc": ""
+}
+Response:
+{
+    "id": 1,
+    "title": "Task 1",
+    "desc": "",
+    "marked_as_done": false
+}
+View task
+GET /tasks/{id}
+
+Body:
+empty
+Response:
+{
+    "id": 1,
+    "title": "Task 1",
+    "desc": "",
+    "marked_as_done": false,
+    "created_at": "2018-12-06 15:59:51"
+}
+Update task
+PUT /tasks/{id}
+
+Body:
+{
+    "title": "First task",
+    "marked_as_done": true
+}
+Response:
+{
+    "id": 1,
+    "title": "First task",
+    "desc": "",
+    "marked_as_done": false,
+    "created_at": "2018-12-06 15:59:51"
+}
+Delete task
+DELETE /tasks/{id}
+
+Body:
+empty
+Response:
+empty
+Other responses
+Response when you sent wrong bearer token or you didn't include token at all:
+{
+    "name": "Unauthorized",
+    "message": "Your request was made with invalid credentials.",
+    "code": 0,
+    "status": 401
+}
+Response when object is not found:
+{
+    "name": "Not Found",
+    "message": "Object not found: 4",
+    "code": 0,
+    "status": 404,
+    "type": "yii\\web\\NotFoundHttpException"
+}
+Response when there is an syntax error:
+{
+    "name": "Bad Request",
+    "message": "Invalid JSON data in request body: Syntax error.",
+    "code": 0,
+    "status": 400,
+    "type": "yii\\web\\BadRequestHttpException"
+}
+© My Company 2024Powered by Yii Framework
